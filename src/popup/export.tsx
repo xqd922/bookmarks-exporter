@@ -72,7 +72,8 @@ function ExportPopup() {
                            iconData.quality === 'ultra-high' ? '(超高清)' :
                            iconData.quality === 'vector' ? '(矢量)' : 
                            iconData.quality === 'high' ? '(高清)' : 
-                           iconData.quality === 'good' ? '(良好)' : '';
+                           iconData.quality === 'good' ? '(良好)' : 
+                           iconData.quality === 'default' ? '(默认)' : '';
         
         if (iconData.icon) {
           setStatusText(`已获取${qualityText}图标: ${item.title}`);
