@@ -178,7 +178,32 @@ export const getCommonIconUrls = (url: string): string[] => {
     `${domain}/favicon.svg`,
     `${domain}/icon.svg`,
     
-    // 传统ICO文件
+    // 常见特殊目录下的图标（按发现频率排序）
+    `${domain}/favicon/favicon.ico`,
+    `${domain}/favicon/favicon.png`,
+    `${domain}/favicon/favicon.svg`,
+    `${domain}/favicon/apple-touch-icon.png`,
+    `${domain}/favicon/apple-touch-icon-180x180.png`,
+    `${domain}/assets/favicon.ico`,
+    `${domain}/assets/favicon.png`,
+    `${domain}/assets/images/favicon.ico`,
+    `${domain}/static/favicon.ico`,
+    `${domain}/static/images/favicon.ico`,
+    `${domain}/public/favicon.ico`,
+    `${domain}/public/images/favicon.ico`,
+    `${domain}/img/favicon.ico`,
+    `${domain}/images/favicon.ico`,
+    `${domain}/icons/favicon.ico`,
+    `${domain}/icons/apple-touch-icon.png`,
+    `${domain}/icon/favicon.ico`,
+    `${domain}/media/favicon.ico`,
+    `${domain}/resources/favicon.ico`,
+    `${domain}/dist/favicon.ico`,
+    `${domain}/build/favicon.ico`,
+    `${domain}/wp-content/themes/favicon.ico`,
+    `${domain}/themes/favicon.ico`,
+    
+    // 传统ICO文件（根目录）
     `${domain}/favicon.ico`,
     `${domain}/icon.ico`
   ];
