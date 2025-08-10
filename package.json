@@ -1,14 +1,19 @@
 {
   "name": "pintree-bookmarks-exporter",
   "displayName": "Pintree Bookmarks Exporter",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Effortlessly export your Chrome bookmarks to organized JSON files.",
   "author": "Pintree. <viggo.zw@gmail.com>",
   "homepage": "https://pintree.io",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
-    "package": "plasmo package"
+    "package": "plasmo package",
+    "release": "node scripts/release.js",
+    "release:win": "powershell -ExecutionPolicy Bypass -File scripts/release.ps1",
+    "version:patch": "node scripts/version.js patch",
+    "version:minor": "node scripts/version.js minor",
+    "version:major": "node scripts/version.js major"
   },
   "dependencies": {
     "@iconify/react": "^5.0.1",
