@@ -11,8 +11,9 @@ interface ExportTreeDataProps {
   type: "folder" | "link"
   addDate: number
   title: string
-  icon?: string // base64格式的图标数据
+  icon?: string // base64格式的高清图标数据
   iconUrl?: string // 原始图标URL作为备用
+  quality?: string // 图标质量等级
   url: string
 }
 
@@ -58,7 +59,7 @@ function ExportPopup() {
       ExportTreeDataProps
     >(treeData as ChangedTreeData[], async (item, _index: number) => {
       if (item.type === "link") {
-        setStatusText(`正在获取图标: ${item.title}`);
+        setStatusText(`正在获取高清图标: ${item.title}`);
         const iconData = await processIconWithFallback(item.url);
         
         processed++;
@@ -66,11 +67,20 @@ function ExportPopup() {
         const progressPercent = Math.floor((processed / total) * 80) + 20; // 20-100%
         setProgress(progressPercent);
         
+        // 根据图标质量更新状态文本
+        const qualityText = iconData.quality === 'premium' ? '(高品质)' : 
+                           iconData.quality === 'vector' ? '(矢量)' : 
+                           iconData.quality === 'high' ? '(高清)' : '';
+        
+        if (iconData.icon) {
+          setStatusText(`已获取${qualityText}图标: ${item.title}`);
+        }
+        
         return {
           type: item.type,
           addDate: item.dateAdded,
           title: item.title,
-          ...iconData, // 包含 icon 和 iconUrl 字段
+          ...iconData, // 包含 icon、iconUrl 和 quality 字段
           url: item.url
         }
       }
