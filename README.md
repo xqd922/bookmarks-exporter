@@ -67,6 +67,32 @@ To set up the development environment:
 6. Rename the `example.keys.json` file to `keys.json` and fill in the corresponding fields.
 7. Make your changes and refresh the extension in Chrome to see the updates.
 
+## Release
+
+To create a new release:
+
+1. Update version number:
+   ```sh
+   pnpm run version:patch  # for bug fixes
+   pnpm run version:minor  # for new features
+   pnpm run version:major  # for breaking changes
+   ```
+
+2. Commit and release:
+   ```sh
+   git add package.json
+   git commit -m "chore: bump version to v1.x.x"
+   pnpm run release:win    # Windows
+   # or
+   pnpm run release        # Linux/Mac
+   ```
+
+This will automatically:
+- Build and package the extension
+- Create a Git tag
+- Trigger GitHub Actions to create a release
+- Upload the extension ZIP file to GitHub Releases
+
 ## Contributing
 
 Contributions are welcome! Please fork this repository, create a new branch, and submit a pull request.
