@@ -3,6 +3,101 @@ import { fetchWrapper } from "@/utils/wrapper"
 // 图标缓存，避免重复下载相同域名的图标
 const iconCache = new Map<string, { icon?: string; iconUrl?: string }>();
 
+// 获取知名网站的特殊高质量图标路径
+export const getSpecialSiteIcons = (hostname: string): string[] => {
+  const specialIcons: string[] = [];
+  
+  if (hostname.includes('youtube.com')) {
+    specialIcons.push(
+      'https://www.youtube.com/s/desktop/favicon.ico',
+      'https://www.youtube.com/img/favicon_144x144.png',
+      'https://www.youtube.com/img/favicon_96x96.png',
+      'https://logo.clearbit.com/youtube.com',
+      'https://www.google.com/s2/favicons?sz=256&domain=youtube.com'
+    );
+  } else if (hostname.includes('google.com')) {
+    specialIcons.push(
+      'https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png',
+      'https://logo.clearbit.com/google.com',
+      'https://www.google.com/favicon.ico'
+    );
+  } else if (hostname.includes('github.com')) {
+    specialIcons.push(
+      'https://github.com/fluidicon.png',
+      'https://github.com/apple-touch-icon-180x180.png',
+      'https://logo.clearbit.com/github.com'
+    );
+  } else if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
+    specialIcons.push(
+      'https://abs.twimg.com/responsive-web/client-web/icon-ios.b1fc7275.png',
+      'https://abs.twimg.com/icons/apple-touch-icon-192x192.png',
+      'https://logo.clearbit.com/twitter.com'
+    );
+  } else if (hostname.includes('facebook.com')) {
+    specialIcons.push(
+      'https://static.xx.fbcdn.net/rsrc.php/yo/r/iRmz9lCMBD2.ico',
+      'https://logo.clearbit.com/facebook.com'
+    );
+  } else if (hostname.includes('instagram.com')) {
+    specialIcons.push(
+      'https://static.cdninstagram.com/rsrc.php/v3/yt/r/30PrGfR3xhD.png',
+      'https://logo.clearbit.com/instagram.com'
+    );
+  } else if (hostname.includes('linkedin.com')) {
+    specialIcons.push(
+      'https://static.licdn.com/aero-v1/sc/h/al2o9zrvru7aqj8e1x2rzsrca',
+      'https://logo.clearbit.com/linkedin.com'
+    );
+  } else if (hostname.includes('netflix.com')) {
+    specialIcons.push(
+      'https://assets.nflxext.com/ffe/siteui/common/icons/nficon2016.ico',
+      'https://logo.clearbit.com/netflix.com'
+    );
+  } else if (hostname.includes('amazon.com')) {
+    specialIcons.push(
+      'https://www.amazon.com/favicon.ico',
+      'https://logo.clearbit.com/amazon.com'
+    );
+  } else if (hostname.includes('microsoft.com')) {
+    specialIcons.push(
+      'https://c.s-microsoft.com/favicon.ico?v2',
+      'https://logo.clearbit.com/microsoft.com'
+    );
+  } else if (hostname.includes('apple.com')) {
+    specialIcons.push(
+      'https://www.apple.com/favicon.ico',
+      'https://logo.clearbit.com/apple.com'
+    );
+  } else if (hostname.includes('stackoverflow.com')) {
+    specialIcons.push(
+      'https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png',
+      'https://logo.clearbit.com/stackoverflow.com'
+    );
+  } else if (hostname.includes('reddit.com')) {
+    specialIcons.push(
+      'https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-180x180.png',
+      'https://logo.clearbit.com/reddit.com'
+    );
+  } else if (hostname.includes('discord.com')) {
+    specialIcons.push(
+      'https://discord.com/assets/f8389ca1a741a115313bede9ac02e2c0.ico',
+      'https://logo.clearbit.com/discord.com'
+    );
+  } else if (hostname.includes('spotify.com')) {
+    specialIcons.push(
+      'https://open.scdn.co/cdn/images/favicon32.8e66b099.png',
+      'https://logo.clearbit.com/spotify.com'
+    );
+  } else if (hostname.includes('twitch.tv')) {
+    specialIcons.push(
+      'https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png',
+      'https://logo.clearbit.com/twitch.tv'
+    );
+  }
+  
+  return specialIcons;
+}
+
 export const getCopyYear = () => {
   const currentYear = new Date().getFullYear()
   const year = currentYear === 2024 ? "2024" : `2024 - ${currentYear}`
@@ -22,14 +117,26 @@ export const getGoogleLogoUrl = async (url: string, size: number = 128) => {
   return `https://www.google.com/s2/favicons?sz=${size}&domain_url=${parsedUrl}`;
 }
 
-// 获取多种尺寸的Google favicon
+// 获取多种尺寸的Google favicon（优化版）
 export const getGoogleLogoUrls = (url: string): string[] => {
   const parsedUrl = new URL(url);
+  const domain = parsedUrl.hostname;
+  
   return [
-    `https://www.google.com/s2/favicons?sz=128&domain_url=${parsedUrl}`, // 128x128 高清
-    `https://www.google.com/s2/favicons?sz=96&domain_url=${parsedUrl}`,  // 96x96
-    `https://www.google.com/s2/favicons?sz=64&domain_url=${parsedUrl}`,  // 64x64
-    `https://www.google.com/s2/favicons?sz=48&domain_url=${parsedUrl}`,  // 48x48
+    // 使用domain参数（有时比domain_url效果更好）
+    `https://www.google.com/s2/favicons?sz=256&domain=${domain}`,
+    `https://www.google.com/s2/favicons?sz=128&domain=${domain}`,
+    `https://www.google.com/s2/favicons?sz=96&domain=${domain}`,
+    
+    // 使用完整URL参数
+    `https://www.google.com/s2/favicons?sz=256&domain_url=${parsedUrl}`,
+    `https://www.google.com/s2/favicons?sz=128&domain_url=${parsedUrl}`,
+    `https://www.google.com/s2/favicons?sz=96&domain_url=${parsedUrl}`,
+    `https://www.google.com/s2/favicons?sz=64&domain_url=${parsedUrl}`,
+    
+    // 不指定尺寸，让Google自动选择最佳尺寸
+    `https://www.google.com/s2/favicons?domain=${domain}`,
+    `https://www.google.com/s2/favicons?domain_url=${parsedUrl}`,
   ];
 }
 
@@ -44,7 +151,10 @@ export const getNativeFaviconUrl = async (url: string) => {
 export const getCommonIconUrls = (url: string): string[] => {
   const parsedUrl = new URL(url);
   const domain = parsedUrl.origin;
-  return [
+  const hostname = parsedUrl.hostname;
+  
+  // 基础高分辨率图标路径
+  const baseIcons = [
     // 高分辨率Apple图标（通常最清晰）
     `${domain}/apple-touch-icon-180x180.png`,
     `${domain}/apple-touch-icon-152x152.png`,
@@ -54,6 +164,8 @@ export const getCommonIconUrls = (url: string): string[] => {
     `${domain}/apple-touch-icon-precomposed.png`,
     
     // 高分辨率PNG图标
+    `${domain}/icon-512x512.png`,
+    `${domain}/icon-256x256.png`,
     `${domain}/icon-192x192.png`,
     `${domain}/icon-128x128.png`,
     `${domain}/icon-96x96.png`,
@@ -70,18 +182,66 @@ export const getCommonIconUrls = (url: string): string[] => {
     `${domain}/favicon.ico`,
     `${domain}/icon.ico`
   ];
+  
+  // 针对特定大型网站的优化路径
+  const specialIcons = [];
+  
+  if (hostname.includes('youtube.com')) {
+    specialIcons.push(
+      `${domain}/img/favicon_144x144.png`,
+      `${domain}/img/favicon_96x96.png`,
+      `${domain}/img/favicon_48x48.png`,
+      `${domain}/s/desktop/favicon.ico`,
+      `${domain}/yts/img/favicon_144x144.png`
+    );
+  } else if (hostname.includes('google.com')) {
+    specialIcons.push(
+      `${domain}/images/branding/googleg/1x/googleg_standard_color_128dp.png`,
+      `${domain}/images/branding/product/ico/googleg_lodp.ico`
+    );
+  } else if (hostname.includes('github.com')) {
+    specialIcons.push(
+      `${domain}/fluidicon.png`,
+      `${domain}/apple-touch-icon-180x180.png`
+    );
+  } else if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
+    specialIcons.push(
+      `${domain}/i/web/icon/favicon.ico`,
+      `${domain}/favicon.ico`
+    );
+  } else if (hostname.includes('facebook.com')) {
+    specialIcons.push(
+      `${domain}/rsrc.php/yo/r/iRmz9lCMBD2.ico`,
+      `${domain}/images/fb_icon_325x325.png`
+    );
+  }
+  
+  // 将特殊路径放在前面，优先尝试
+  return [...specialIcons, ...baseIcons];
 }
 
 // 获取更多第三方高清图标服务
 export const getThirdPartyIconUrls = (url: string): string[] => {
   const parsedUrl = new URL(url);
   const domain = parsedUrl.hostname;
+  const encodedUrl = encodeURIComponent(url);
+  
   return [
-    // Clearbit (高质量品牌Logo)
+    // Clearbit (高质量品牌Logo) - 最高优先级
     `https://logo.clearbit.com/${domain}`,
+    
+    // IconHorse 服务（新的高质量服务）
+    `https://icon.horse/icon/${domain}`,
+    
+    // Favicon Grabber 服务
+    `https://favicongrabber.com/api/grab/${domain}`,
     
     // DuckDuckGo 图标服务（高分辨率）
     `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+    
+    // Google Favicon 高分辨率版本
+    `https://www.google.com/s2/favicons?sz=256&domain=${domain}`,
+    `https://www.google.com/s2/favicons?sz=128&domain=${domain}`,
     
     // Favicon.io 服务
     `https://favicons.githubusercontent.com/${domain}`,
@@ -90,8 +250,19 @@ export const getThirdPartyIconUrls = (url: string): string[] => {
     `https://favicon.yandex.net/favicon/${domain}`,
     
     // Besticon 服务（多尺寸）
-    `https://besticon-demo.herokuapp.com/icon?url=${encodeURIComponent(url)}&size=128`,
-    `https://besticon-demo.herokuapp.com/icon?url=${encodeURIComponent(url)}&size=96`,
+    `https://besticon-demo.herokuapp.com/icon?url=${encodedUrl}&size=256`,
+    `https://besticon-demo.herokuapp.com/icon?url=${encodedUrl}&size=128`,
+    `https://besticon-demo.herokuapp.com/icon?url=${encodedUrl}&size=96`,
+    
+    // Favicon Kit 服务
+    `https://api.faviconkit.com/${domain}/256`,
+    `https://api.faviconkit.com/${domain}/128`,
+    
+    // GetFavicon 服务
+    `https://www.getfavicon.org/?url=${encodedUrl}&size=128`,
+    
+    // Iconify API (如果是知名网站)
+    `https://api.iconify.design/logos:${domain.replace('.', '-')}.svg`,
   ];
 }
 
@@ -99,18 +270,47 @@ export const getThirdPartyIconUrls = (url: string): string[] => {
 export const getLogoUrl = async (url: string) => {
   console.log(`Starting high-resolution icon search for: ${url}`);
   
+  const parsedUrl = new URL(url);
+  const hostname = parsedUrl.hostname;
+  
+  // 特殊处理：对于知名大型网站，优先尝试已知的高质量图标
+  const specialIcons = getSpecialSiteIcons(hostname);
+  if (specialIcons.length > 0) {
+    for (const iconUrl of specialIcons) {
+      try {
+        const response = await fetchWrapper(iconUrl, { timeout: 5000 });
+        const contentType = response.headers.get('content-type');
+        const contentLength = response.headers.get('content-length');
+        
+        if (contentType && contentType.includes('image')) {
+          // 检查文件大小，确保不是占位符
+          const sizeKB = contentLength ? parseInt(contentLength) / 1024 : 0;
+          if (sizeKB > 0.5 || !contentLength) { // 大于0.5KB或无法获取大小
+            console.log(`Found special site icon for ${hostname}: ${iconUrl} (${contentLength} bytes)`);
+            return iconUrl;
+          }
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+  }
+  
   // 第一优先级：网站原生高分辨率图标
   const commonIconUrls = getCommonIconUrls(url);
   for (const iconUrl of commonIconUrls) {
     try {
       const response = await fetchWrapper(iconUrl, { timeout: 5000 });
-      // 检查图片尺寸和质量
       const contentLength = response.headers.get('content-length');
       const contentType = response.headers.get('content-type');
       
       if (contentType && contentType.includes('image')) {
-        console.log(`Found native high-res icon for ${url}: ${iconUrl} (${contentLength} bytes)`);
-        return iconUrl;
+        // 检查文件大小，过小的可能是占位符
+        const sizeKB = contentLength ? parseInt(contentLength) / 1024 : 0;
+        if (sizeKB > 1 || !contentLength) { // 大于1KB或无法获取大小信息
+          console.log(`Found native high-res icon for ${url}: ${iconUrl} (${contentLength} bytes)`);
+          return iconUrl;
+        }
       }
     } catch (error) {
       continue;
@@ -123,9 +323,13 @@ export const getLogoUrl = async (url: string) => {
   const thirdPartyUrls = getThirdPartyIconUrls(url);
   for (const iconUrl of thirdPartyUrls) {
     try {
-      await fetchWrapper(iconUrl, { timeout: 5000 });
-      console.log(`Using third-party high-res icon for ${url}: ${iconUrl}`);
-      return iconUrl;
+      const response = await fetchWrapper(iconUrl, { timeout: 5000 });
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('image')) {
+        console.log(`Using third-party high-res icon for ${url}: ${iconUrl}`);
+        return iconUrl;
+      }
     } catch (error) {
       continue;
     }
@@ -135,9 +339,13 @@ export const getLogoUrl = async (url: string) => {
   const googleUrls = getGoogleLogoUrls(url);
   for (const iconUrl of googleUrls) {
     try {
-      await fetchWrapper(iconUrl, { timeout: 5000 });
-      console.log(`Using Google high-res favicon for ${url}: ${iconUrl}`);
-      return iconUrl;
+      const response = await fetchWrapper(iconUrl, { timeout: 5000 });
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('image')) {
+        console.log(`Using Google high-res favicon for ${url}: ${iconUrl}`);
+        return iconUrl;
+      }
     } catch (error) {
       continue;
     }
@@ -213,15 +421,8 @@ export const processIconWithFallback = async (url: string): Promise<{ icon?: str
       try {
         const base64Icon = await logoToBase64(logoUrl);
         
-        // 评估图标质量
-        let quality = 'standard';
-        if (logoUrl.includes('180x180') || logoUrl.includes('192x192') || logoUrl.includes('128')) {
-          quality = 'high';
-        } else if (logoUrl.includes('svg')) {
-          quality = 'vector';
-        } else if (logoUrl.includes('clearbit') || logoUrl.includes('apple-touch-icon')) {
-          quality = 'premium';
-        }
+        // 智能评估图标质量
+        let quality = evaluateIconQuality(logoUrl, base64Icon);
         
         result = {
           icon: base64Icon,
@@ -250,6 +451,57 @@ export const processIconWithFallback = async (url: string): Promise<{ icon?: str
     console.warn(`Failed to get high-res icon for ${url}:`, error);
     return {};
   }
+}
+
+// 智能评估图标质量
+export const evaluateIconQuality = (iconUrl: string, base64Data?: string): string => {
+  // 基于URL特征评估
+  if (iconUrl.includes('clearbit.com')) {
+    return 'premium'; // Clearbit品牌级Logo
+  }
+  
+  if (iconUrl.includes('.svg') || iconUrl.includes('svg')) {
+    return 'vector'; // SVG矢量图标
+  }
+  
+  // 基于尺寸评估
+  if (iconUrl.includes('512x512') || iconUrl.includes('256x256')) {
+    return 'ultra-high'; // 超高清
+  }
+  
+  if (iconUrl.includes('180x180') || iconUrl.includes('192x192') || 
+      iconUrl.includes('144x144') || iconUrl.includes('152x152')) {
+    return 'high'; // 高清
+  }
+  
+  if (iconUrl.includes('128x128') || iconUrl.includes('128') || 
+      iconUrl.includes('96x96') || iconUrl.includes('apple-touch-icon')) {
+    return 'good'; // 良好
+  }
+  
+  // 基于服务商评估
+  if (iconUrl.includes('icon.horse') || iconUrl.includes('faviconkit') || 
+      iconUrl.includes('besticon')) {
+    return 'good'; // 专业服务
+  }
+  
+  // 基于文件大小评估（如果有base64数据）
+  if (base64Data) {
+    const sizeKB = (base64Data.length * 0.75) / 1024; // base64大约比原文件大33%
+    if (sizeKB > 20) return 'high';
+    if (sizeKB > 10) return 'good';
+    if (sizeKB > 5) return 'standard';
+  }
+  
+  // 特殊网站路径
+  if (iconUrl.includes('youtube.com/img/favicon_144') || 
+      iconUrl.includes('github.com/fluidicon') ||
+      iconUrl.includes('twimg.com') ||
+      iconUrl.includes('fbcdn.net')) {
+    return 'premium';
+  }
+  
+  return 'standard';
 }
 
 // 清理图标缓存

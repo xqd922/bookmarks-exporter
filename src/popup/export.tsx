@@ -68,9 +68,11 @@ function ExportPopup() {
         setProgress(progressPercent);
         
         // 根据图标质量更新状态文本
-        const qualityText = iconData.quality === 'premium' ? '(高品质)' : 
+        const qualityText = iconData.quality === 'premium' ? '(品牌级)' : 
+                           iconData.quality === 'ultra-high' ? '(超高清)' :
                            iconData.quality === 'vector' ? '(矢量)' : 
-                           iconData.quality === 'high' ? '(高清)' : '';
+                           iconData.quality === 'high' ? '(高清)' : 
+                           iconData.quality === 'good' ? '(良好)' : '';
         
         if (iconData.icon) {
           setStatusText(`已获取${qualityText}图标: ${item.title}`);
