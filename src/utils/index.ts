@@ -19,6 +19,40 @@ export const getGoogleLogoUrl = async (url: string) => {
   return `https://www.google.com/s2/favicons?sz=64&domain_url=${parsedUrl}`;
 }
 
+// 获取图标数据并返回文件名和blob数据
+export const getIconData = async (url: string): Promise<{ fileName: string; blob: Blob } | undefined> => {
+  try {
+    const parsedUrl = new URL(url);
+    const domain = parsedUrl.hostname;
+    const fileName = `${domain.replace(/\./g, '_')}.ico`;
+    
+    // 尝试多个图标源
+    const iconSources = [
+      await getClearbitLogoUrl(url),
+      await getGoogleLogoUrl(url),
+      `${parsedUrl.origin}/favicon.ico`
+    ];
+    
+    for (const iconUrl of iconSources) {
+      try {
+        const response = await fetchWrapper(iconUrl);
+        if (response.ok) {
+          const blob = await response.blob();
+          return { fileName, blob };
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch icon from ${iconUrl}:`, error);
+        continue;
+      }
+    }
+    
+    return undefined;
+  } catch (error) {
+    console.error(`Error fetching icon for ${url}:`, error);
+    return undefined;
+  }
+}
+
 // 获取网站的 logo 或 favicon，并进行容错处理
 export const getLogoUrl = async (url: string) => {
   try {

@@ -2,7 +2,7 @@ import { Export } from "@/components/icons"
 import { Progress } from "@/components/ui/progress"
 import { AppContext } from "@/context/app-context"
 import type { ChangedTreeData } from "@/types/bookmarks"
-import { delay, getClearbitLogoUrl } from "@/utils"
+import { delay, getIconData } from "@/utils"
 import { recursiveChange } from "@/utils/tree"
 import { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -17,22 +17,34 @@ interface ExportTreeDataProps {
 
 function ExportPopup() {
   const navigate = useNavigate()
-  const { treeData, setTreeData } = useContext(AppContext)
+  const { treeData, setTreeData, iconData, setIconData } = useContext(AppContext)
   const [progress, setProgress] = useState(0)
 
   const exportData = async () => {
+    const newIconData = new Map<string, { fileName: string; blob: Blob }>()
+    
     // 处理数据
     const bookmarks = await recursiveChange<
       ChangedTreeData,
       ExportTreeDataProps
     >(treeData as ChangedTreeData[], async (item, _index: number) => {
       if (item.type === "link") {
-        const logoUrl = await getClearbitLogoUrl(item.url)
+        const iconResult = await getIconData(item.url)
+        if (iconResult) {
+          newIconData.set(item.url, iconResult)
+          return {
+            type: item.type,
+            addDate: item.dateAdded,
+            title: item.title,
+            icon: `icons/${iconResult.fileName}`,
+            url: item.url
+          }
+        }
         return {
           type: item.type,
           addDate: item.dateAdded,
           title: item.title,
-          icon: logoUrl,
+          icon: undefined,
           url: item.url
         }
       }
@@ -44,6 +56,7 @@ function ExportPopup() {
       }
     })
 
+    setIconData(newIconData)
     setTreeData(bookmarks)
   }
 

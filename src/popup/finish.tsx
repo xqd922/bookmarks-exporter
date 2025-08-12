@@ -2,23 +2,50 @@ import { Finish, Icon } from "@/components/icons"
 import { MainFooter } from "@/components/main-footer"
 import { Button } from "@/components/ui/button"
 import { AppContext } from "@/context/app-context"
+import JSZip from "jszip"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 
 function FinishPopup() {
   const navigate = useNavigate()
-  const { treeData } = useContext(AppContext)
+  const { treeData, iconData } = useContext(AppContext)
 
-  // 点击导出按钮后，将数据处理为 JSON 格式
-  const onDownload = () => {
-    const data = JSON.stringify(treeData, null, 2)
-    const blob = new Blob([data], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "pintree.json"
-    a.click()
-    URL.revokeObjectURL(url)
+  // 点击导出按钮后，将数据和图标打包下载
+  const onDownload = async () => {
+    const zip = new JSZip()
+    
+    // 添加 JSON 文件
+    const jsonData = JSON.stringify(treeData, null, 2)
+    zip.file("pintree.json", jsonData)
+    
+    // 创建 icons 文件夹并添加图标文件
+    const iconsFolder = zip.folder("icons")
+    if (iconsFolder) {
+      iconData.forEach((iconInfo, url) => {
+        iconsFolder.file(iconInfo.fileName, iconInfo.blob)
+      })
+    }
+    
+    // 生成压缩包并下载
+    try {
+      const zipBlob = await zip.generateAsync({ type: "blob" })
+      const url = URL.createObjectURL(zipBlob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "pintree-bookmarks.zip"
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Error creating zip file:", error)
+      // 如果压缩失败，至少下载 JSON 文件
+      const blob = new Blob([jsonData], { type: "application/json" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "pintree.json"
+      a.click()
+      URL.revokeObjectURL(url)
+    }
   }
 
   return (
