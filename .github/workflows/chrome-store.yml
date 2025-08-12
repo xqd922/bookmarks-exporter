@@ -1,0 +1,39 @@
+name: Publish to Chrome Web Store
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
+        
+    - name: Install dependencies
+      run: pnpm install
+      
+    - name: Build extension
+      run: pnpm build
+      
+    - name: Package extension
+      run: pnpm package
+      
+    - name: Publish to Chrome Web Store
+      uses: PlasmoHQ/bpp@v3
+      with:
+        keys: ${{ secrets.BPP_KEYS }}
+        artifact: build/chrome-mv3-prod.zip

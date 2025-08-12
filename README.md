@@ -67,6 +67,39 @@ To set up the development environment:
 6. Rename the `example.keys.json` file to `keys.json` and fill in the corresponding fields.
 7. Make your changes and refresh the extension in Chrome to see the updates.
 
+## Release Process
+
+### Automatic Release via GitHub Actions
+
+1. **Create a new tag**:
+   ```sh
+   git tag -a v3.0.0 -m "Release v3.0.0"
+   git push origin v3.0.0
+   ```
+
+2. **GitHub Actions will automatically**:
+   - Build the extension
+   - Create a GitHub release
+   - Upload the packaged extension as a release asset
+   - Optionally publish to Chrome Web Store (if configured)
+
+### Manual Release
+
+1. Build and package:
+   ```sh
+   pnpm build
+   pnpm package
+   ```
+2. The packaged extension will be available at `build/chrome-mv3-prod.zip`
+
+### Chrome Web Store Publishing
+
+To enable automatic Chrome Web Store publishing:
+
+1. Create a `keys.json` file with your Chrome Web Store credentials
+2. Add the contents as a GitHub secret named `BPP_KEYS`
+3. The extension will be automatically published when a new release is created
+
 ## Contributing
 
 Contributions are welcome! Please fork this repository, create a new branch, and submit a pull request.

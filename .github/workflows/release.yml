@@ -1,0 +1,85 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
+        
+    - name: Install dependencies
+      run: pnpm install
+      
+    - name: Build extension
+      run: pnpm build
+      
+    - name: Package extension
+      run: pnpm package
+      
+    - name: Get version
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.VERSION }}
+        release_name: Pintree Bookmarks Exporter ${{ steps.version.outputs.VERSION }}
+        body: |
+          ## 🚀 Pintree Bookmarks Exporter ${{ steps.version.outputs.VERSION }}
+          
+          ### 📦 Installation
+          1. Download the `chrome-mv3-prod.zip` file below
+          2. Extract the ZIP file
+          3. Open Chrome and go to `chrome://extensions/`
+          4. Enable "Developer mode"
+          5. Click "Load unpacked" and select the extracted folder
+          
+          ### 🆕 What's New
+          - Automatic icon download and local storage
+          - ZIP export format with icons/ folder
+          - Multi-source icon fetching (Clearbit, Google, native)
+          - Enhanced error handling and fallback mechanisms
+          
+          ### 📋 Features
+          - One-click bookmark export to organized JSON
+          - Local icon files included in export
+          - User-friendly popup interface
+          - Support for nested bookmark folders
+          
+          ### 🔧 Technical Details
+          - Built with Plasmo Framework
+          - React + TypeScript + Tailwind CSS
+          - Chrome Manifest V3 compatible
+        draft: false
+        prerelease: false
+        
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/chrome-mv3-prod.zip
+        asset_name: chrome-mv3-prod.zip
+        asset_content_type: application/zip
